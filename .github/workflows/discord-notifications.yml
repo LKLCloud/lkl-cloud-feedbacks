@@ -1,0 +1,119 @@
+name: LKL Cloud - Notifications Discord
+
+on:
+  issues:
+    types: [opened, closed, labeled]
+  issue_comment:
+    types: [created]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Nouvelle Issue Ouverte
+        if: github.event_name == 'issues' && github.event.action == 'opened'
+        uses: tsickert/discord-webhook@v6.0.0
+        with:
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          embed-title: "🆕 Nouvelle Issue - LKL Cloud"
+          embed-color: 3447003
+          embed-description: |
+            **Titre:** ${{ github.event.issue.title }}
+            **Créé par:** ${{ github.event.issue.user.login }}
+            **Lien:** ${{ github.event.issue.html_url }}
+
+            **Description:**
+            ${{ github.event.issue.body }}
+          embed-footer-text: "LKL Cloud Feedbacks"
+          embed-timestamp: ${{ github.event.issue.created_at }}
+
+      - name: Issue Fermée
+        if: github.event_name == 'issues' && github.event.action == 'closed'
+        uses: tsickert/discord-webhook@v6.0.0
+        with:
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          embed-title: "✅ Issue Résolue - LKL Cloud"
+          embed-color: 8380416
+          embed-description: |
+            **Titre:** ${{ github.event.issue.title }}
+            **Fermée par:** ${{ github.event.sender.login }}
+            **Lien:** ${{ github.event.issue.html_url }}
+          embed-footer-text: "LKL Cloud Feedbacks"
+          embed-timestamp: ${{ github.event.issue.closed_at }}
+
+      - name: Issue Labellisée - Bug
+        if: github.event_name == 'issues' && github.event.action == 'labeled' && contains(github.event.label.name, 'bug')
+        uses: tsickert/discord-webhook@v6.0.0
+        with:
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          embed-title: "🐛 Bug Identifié - LKL Cloud"
+          embed-color: 14423108
+          embed-description: |
+            **Titre:** ${{ github.event.issue.title }}
+            **Label:** ${{ github.event.label.name }}
+            **Par:** ${{ github.event.sender.login }}
+            **Lien:** ${{ github.event.issue.html_url }}
+          embed-footer-text: "LKL Cloud Feedbacks"
+
+      - name: Issue Labellisée - Amélioration
+        if: github.event_name == 'issues' && github.event.action == 'labeled' && contains(github.event.label.name, 'improvement')
+        uses: tsickert/discord-webhook@v6.0.0
+        with:
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          embed-title: "⚡ Amélioration Proposée - LKL Cloud"
+          embed-color: 7355647
+          embed-description: |
+            **Titre:** ${{ github.event.issue.title }}
+            **Label:** ${{ github.event.label.name }}
+            **Par:** ${{ github.event.sender.login }}
+            **Lien:** ${{ github.event.issue.html_url }}
+          embed-footer-text: "LKL Cloud Feedbacks"
+
+      - name: Issue Labellisée - Nouvelle Fonctionnalité
+        if: github.event_name == 'issues' && github.event.action == 'labeled' && contains(github.event.label.name, 'feature')
+        uses: tsickert/discord-webhook@v6.0.0
+        with:
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          embed-title: "🚀 Nouvelle Fonctionnalité - LKL Cloud"
+          embed-color: 2795247
+          embed-description: |
+            **Titre:** ${{ github.event.issue.title }}
+            **Label:** ${{ github.event.label.name }}
+            **Par:** ${{ github.event.sender.login }}
+            **Lien:** ${{ github.event.issue.html_url }}
+          embed-footer-text: "LKL Cloud Feedbacks"
+
+      - name: Issue Priorité Critique
+        if: github.event_name == 'issues' && github.event.action == 'labeled' && contains(github.event.label.name, 'critical')
+        uses: tsickert/discord-webhook@v6.0.0
+        with:
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          embed-title: "🚨 URGENT - Priorité Critique - LKL Cloud"
+          embed-color: 12320773
+          embed-description: |
+            **⚠️ SERVICE DOWN / URGENT ⚠️**
+
+            **Titre:** ${{ github.event.issue.title }}
+            **Label:** ${{ github.event.label.name }}
+            **Par:** ${{ github.event.sender.login }}
+            **Lien:** ${{ github.event.issue.html_url }}
+
+            @everyone - Intervention immédiate requise
+          embed-footer-text: "LKL Cloud Feedbacks - PRIORITÉ CRITIQUE"
+
+      - name: Nouveau Commentaire
+        if: github.event_name == 'issue_comment' && github.event.action == 'created'
+        uses: tsickert/discord-webhook@v6.0.0
+        with:
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          embed-title: "💬 Nouveau Commentaire - LKL Cloud"
+          embed-color: 5793266
+          embed-description: |
+            **Issue:** ${{ github.event.issue.title }}
+            **Auteur:** ${{ github.event.comment.user.login }}
+            **Lien:** ${{ github.event.comment.html_url }}
+
+            **Commentaire:**
+            ${{ github.event.comment.body }}
+          embed-footer-text: "LKL Cloud Feedbacks"
+          embed-timestamp: ${{ github.event.comment.created_at }}
